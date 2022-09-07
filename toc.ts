@@ -18,6 +18,7 @@ function htmlencode(x: unknown): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
+
 export interface Options {
   /** The pattern serving as the TOC placeholder in your markdown */
   placeholder: string;
@@ -26,7 +27,7 @@ export interface Options {
   dataKey?: string;
 
   /** A custom slugification function */
-  slugify: (x: unknown) => string;
+  slugify: (x: string) => string;
 
   /** Index to start with when making duplicate slugs unique. */
   uniqueSlugStartIndex: number;
@@ -53,14 +54,20 @@ export interface Options {
   listType: "ol" | "ul";
 
   /** A function for formatting headings */
-  format?: (x: string, htmlencode: (x: string) => string) => string;
+  format?: (x: string, htmlencode: (x: unknown) => string) => string;
 
   /** A function (html, ast, env) {} called after rendering. */
   callback?: (
     html: string,
-    ast: Record<string, unknown>,
+    ast: TocAst,
     env: Record<string, unknown>,
   ) => void;
+}
+
+export interface TocAst {
+  l: number;
+  n: string;
+  c: TocAst[];
 }
 
 export const defaults: Options = {
@@ -213,7 +220,7 @@ export default function tocPlugin(md: any, userOptions: Partial<Options> = {}) {
   };
 
   function headings2ast(tokens: any[]) {
-    const ast = { l: 0, n: "", c: [] };
+    const ast: TocAst = { l: 0, n: "", c: [] };
     const stack = [ast];
 
     for (let i = 0, iK = tokens.length; i < iK; i++) {
@@ -237,16 +244,13 @@ export default function tocPlugin(md: any, userOptions: Partial<Options> = {}) {
         };
 
         if (node.l > stack[0].l) {
-          // @ts-ignore: no types yet
           stack[0].c.push(node);
           stack.unshift(node);
         } else if (node.l === stack[0].l) {
-          // @ts-ignore: no types yet
           stack[1].c.push(node);
           stack[0] = node;
         } else {
           while (node.l <= stack[0].l) stack.shift();
-          // @ts-ignore: no types yet
           stack[0].c.push(node);
           stack.unshift(node);
         }
