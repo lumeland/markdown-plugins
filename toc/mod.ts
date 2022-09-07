@@ -4,20 +4,8 @@
  */
 
 // deno-lint-ignore-file no-explicit-any
-function slugify(x: unknown): string {
-  return encodeURIComponent(
-    String(x).trim().toLowerCase().replace(/\s+/g, "-"),
-  );
-}
 
-function htmlencode(x: unknown): string {
-  return String(x)
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
+import { htmlencode, slugify } from "../utils.ts";
 
 export interface Options {
   /** The pattern serving as the TOC placeholder in your markdown */
@@ -97,7 +85,7 @@ export default function tocPlugin(md: any, userOptions: Partial<Options> = {}) {
     _endLine: number,
     silent: boolean,
   ) {
-    let token;
+    let token: any;
     const pos = state.bMarks[startLine] + state.tShift[startLine];
     const max = state.eMarks[startLine];
 
@@ -228,7 +216,7 @@ export default function tocPlugin(md: any, userOptions: Partial<Options> = {}) {
       if (token.type === "heading_open") {
         const key = (
           tokens[i + 1]
-            .children
+            .children!
             .filter(function (token: any) {
               return token.type === "text" || token.type === "code_inline";
             })
