@@ -9,7 +9,7 @@ Collection of markdown-it plugins adapted to Lume
 This plugin extracts the document title and save it in the `title` key of the
 page data. Useful if you want to use plain markdown files, without front matter.
 
-[See the demo](toc/demo/)
+[See the demo](title/demo/)
 
 ## Toc
 
