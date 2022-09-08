@@ -2,6 +2,8 @@
 
 Collection of markdown-it plugins adapted to Lume
 
+> Warning: Only works with the latest development version of Lume
+
 ## Toc
 
 This plugin generates a table of contents (TOC) and store it in the page data,
@@ -18,7 +20,7 @@ import toc from "markdown-plugins/toc/mod.ts";
 
 // Configure the markdown plugin
 const markdown = {
-  plugins: [toc]
+  plugins: [toc],
   keepDefaultPlugins: true,
 };
 

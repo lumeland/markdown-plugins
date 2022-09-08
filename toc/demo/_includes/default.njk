@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+</head>
+<body>
+  <header class="doc-header">
+    <h1>{{ title }}</h1>
+  
+    {% if toc.length %}  
+    <nav class="toc">
+      <ol>
+        {% for item in toc %}
+        <li>
+          <a href="#{{ item.slug }}">{{ item.text }}</a>
+  
+          {% if item.children.length %}
+          <ul>
+            {% for child in item.children %}
+            <li>
+              <a href="#{{ child.slug }}">{{ child.text }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+    </nav>
+    {% endif %}
+  </header>
+  
+  {{ content | safe }}
+</body>
+</html>
