@@ -10,6 +10,5 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.1.0] - Unreleased
 ### Added
 - `toc` plugin
-- `anchor` plugin
 
 [0.1.0]: https://github.com/lumeland/markdown-plugins/releases/tag/v0.1.0
