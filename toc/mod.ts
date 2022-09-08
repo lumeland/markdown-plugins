@@ -35,7 +35,7 @@ export interface Node {
   children: Node[];
 }
 
-export default function tocPlugin(md: any, userOptions: Partial<Options> = {}) {
+export default function toc(md: any, userOptions: Partial<Options> = {}) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
   function headings2ast(state: any, pageUrl?: string): Node[] {
