@@ -5,6 +5,7 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { headerLink } from "./anchors.ts";
+import { getRawText } from "../utils.ts";
 
 export interface Options {
   /** Minimum level to apply anchors. */
@@ -59,12 +60,7 @@ export default function toc(md: any, userOptions: Partial<Options> = {}) {
       }
 
       // Get the text
-      const text = tokens[i + 1]
-        .children
-        .filter((token: any) =>
-          token.type === "text" || token.type === "code_inline"
-        )
-        .reduce((s: string, t: any) => s + t.content, "");
+      const text = getRawText(tokens[i + 1].children);
 
       // Get the slug
       let slug = token.attrGet("id") || slugify(text);

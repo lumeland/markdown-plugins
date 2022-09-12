@@ -1,22 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-function getRawText(tokens: any[]) {
-  let text = "";
-
-  for (const token of tokens) {
-    switch (token.type) {
-      case "text":
-      case "code_inline":
-        text += token.content;
-        break;
-      case "softbreak":
-      case "hardbreak":
-        text += " ";
-        break;
-    }
-  }
-
-  return text;
-}
+import { getRawText } from "../utils.ts";
 
 export interface Options {
   /** Heading level to look for the title. Use 0 to take whichever heading comes first. */
@@ -34,28 +17,32 @@ export const defaults: Options = {
 export default function title(md: any, userOptions: Partial<Options> = {}) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
-  const originalHeadingOpen = md.renderer.rules.heading_open;
+  function getTitle(state: any): string | undefined {
+    const tokens: any[] = state.tokens;
 
-  md.renderer.rules.heading_open = function (
-    tokens: any[],
-    idx: number,
-    opts: any,
-    env: Record<string, any>,
-    self: any,
-  ) {
-    const data = env.data?.page?.data;
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
 
-    if (
-      data && !data[options.key] &&
-      (options.level === 0 || tokens[idx].tag === `h${options.level}`)
-    ) {
-      data[options.key] = getRawText(tokens[idx + 1].children);
+      if (token.type !== "heading_open") {
+        continue;
+      }
+
+      // Calculate the level
+      const level = parseInt(token.tag.substr(1), 10);
+
+      if (options.level === 0 || level === options.level) {
+        return getRawText(tokens[i + 1].children);
+      }
+    }
+  }
+
+  md.core.ruler.push("getTitle", function (state: any) {
+    const data = state.env.data?.page?.data;
+
+    if (!data) {
+      return;
     }
 
-    if (originalHeadingOpen) {
-      return originalHeadingOpen(tokens, idx, opts, env, self);
-    }
-
-    return self.renderToken(tokens, idx, opts, env, self);
-  };
+    data[options.key] = getTitle(state);
+  });
 }

@@ -2,8 +2,6 @@
 
 Collection of markdown-it plugins adapted to Lume
 
-> Warning: Only works with the latest development version of Lume
-
 ## Title
 
 This plugin extracts the document title and save it in the `title` key of the
