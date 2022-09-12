@@ -1,4 +1,4 @@
-# markdown-plugins
+# Lume Markdown Plugins
 
 Collection of markdown-it plugins adapted to Lume
 
