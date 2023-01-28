@@ -7,6 +7,9 @@ export interface Options {
 
   /** Key to save the title in the page data */
   key: string;
+
+  /** Function to transform the title before saving it */
+  transform?: (title: string | undefined, data: any) => string;
 }
 
 export const defaults: Options = {
@@ -41,6 +44,10 @@ export default function title(md: any, userOptions: Partial<Options> = {}) {
       return;
     }
 
-    data[options.key] = getTitle(state.tokens);
+    const title = options.transform
+      ? options.transform(getTitle(state.tokens), data)
+      : getTitle(state.tokens);
+
+    data[options.key] = title;
   });
 }

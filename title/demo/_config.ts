@@ -3,7 +3,9 @@ import title from "../mod.ts";
 
 // Configure the markdown plugin
 const markdown = {
-  plugins: [title],
+  plugins: [
+    [title, { transform: (title) => title?.toUpperCase()}]
+  ],
   keepDefaultPlugins: true,
 };
 
