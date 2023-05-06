@@ -1,10 +1,10 @@
 import lume from "lume/mod.ts";
-import title from "../mod.ts";
+import footnote from "../mod.ts";
 
 // Configure the markdown plugin
 const markdown = {
   plugins: [
-    [title, { transform: (title) => title?.toUpperCase() }],
+    footnote,
   ],
   keepDefaultPlugins: true,
 };

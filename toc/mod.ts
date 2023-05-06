@@ -9,7 +9,7 @@ import { getRawText } from "../utils.ts";
 
 export interface Options {
   /** Minimum level to apply anchors. */
-  level: number | number[];
+  level: number;
 
   /** Key to save the toc in the page data */
   key: string;

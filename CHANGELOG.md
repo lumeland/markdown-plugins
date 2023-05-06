@@ -1,10 +1,15 @@
 <!-- deno-fmt-ignore-file -->
 
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
+
+## [0.5.0] - 2023-05-06
+### Added
+- `footnotes` plugin.
 
 ## [0.4.0] - 2023-03-14
 ### Added
@@ -29,6 +34,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - `toc` plugin.
 - `title` plugin.
 
+[0.5.0]: https://github.com/lumeland/markdown-plugins/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/lumeland/markdown-plugins/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/lumeland/markdown-plugins/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/lumeland/markdown-plugins/compare/v0.1.0...v0.2.0

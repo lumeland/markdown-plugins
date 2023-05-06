@@ -58,7 +58,7 @@ const LinkInsideHeaderOptions: LinkInsideHeaderOptions = {
  * ```html
  * <h1 id="foo">This is the title</h1>
  * is converted to:
- * <h1 id="foo"><a href="#foo">This is the title</a></h1>
+ * <h1 id="foo"><a href="#foo">#</a>This is the title</h1>
  * ```
  */
 export function linkInsideHeader(

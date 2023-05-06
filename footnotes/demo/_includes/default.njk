@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+</head>
+<body>
+  {{ content | safe }}
+
+  {% if footnotes.length %}
+  <ul>
+    {% for note in footnotes %}
+    <li id={{ note.id }}>
+      {{ note.content | safe }}
+      <a href="#{{ note.refId }}" class="footnote-backref">↩</a>
+    </li>
+    {% endfor %}
+  </ul>  
+  {% endif %}
+</body>
+</html>
