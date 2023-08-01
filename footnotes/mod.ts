@@ -36,7 +36,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
     attrs.push(`href="#${options.idPrefix}${id}"`);
     attrs.push(`id="${options.referenceIdPrefix}${id}"`);
 
-    return `<sup><a ${attrs.join(" ")}">${label}</a></sup>`;
+    return `<sup><a ${attrs.join(" ")}>${label}</a></sup>`;
   };
 
   // Process footnote block definition
