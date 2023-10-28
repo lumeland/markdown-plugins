@@ -17,6 +17,9 @@ export interface Options {
   /** Anchor type */
   anchor: false | ((slug: string, state: any, idx: number) => void);
 
+  /** Slugify function */
+  slugify: (x: string) => string;
+
   /** Value of the tabindex attribute on headings, set to false to disable. */
   tabIndex: number | false;
 }
@@ -25,6 +28,7 @@ export const defaults: Options = {
   level: 2,
   key: "toc",
   anchor: headerLink(),
+  slugify,
   tabIndex: -1,
 };
 
@@ -63,7 +67,7 @@ export default function toc(md: any, userOptions: Partial<Options> = {}) {
       const text = getRawText(tokens[i + 1].children);
 
       // Get the slug
-      let slug = token.attrGet("id") || slugify(text);
+      let slug = token.attrGet("id") || options.slugify(text);
 
       // Make sure the slug is unique
       while (slugs.has(slug)) {
@@ -124,7 +128,7 @@ export default function toc(md: any, userOptions: Partial<Options> = {}) {
   });
 }
 
-function slugify(x: unknown): string {
+function slugify(x: string): string {
   return encodeURIComponent(
     String(x).trim().toLowerCase().replace(/\s+/g, "-"),
   );
