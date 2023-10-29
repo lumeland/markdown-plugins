@@ -3,6 +3,11 @@ import toc from "../../toc.ts";
 
 const site = lume();
 
-site.use(toc());
+site.use(toc({
+  slugify: {
+    separator: "_",
+    lowercase: true,
+  },
+}));
 
 export default site;
