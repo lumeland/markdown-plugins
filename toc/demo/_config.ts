@@ -1,12 +1,8 @@
 import lume from "lume/mod.ts";
-import toc from "../mod.ts";
+import toc from "../../toc.ts";
 
-// Configure the markdown plugin
-const markdown = {
-  plugins: [toc],
-  keepDefaultPlugins: true,
-};
+const site = lume();
 
-const site = lume({}, { markdown });
+site.use(toc());
 
 export default site;
