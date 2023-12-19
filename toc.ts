@@ -2,7 +2,7 @@ import toc, { defaults, Options as TocOptions } from "./toc/mod.ts";
 import createSlugifier, {
   Options as SlugifierOptions,
 } from "lume/core/slugifier.ts";
-import type { Site } from "lume/core.ts";
+import "lume/types.ts";
 
 export interface Options extends Omit<TocOptions, "slugify"> {
   slugify: Partial<SlugifierOptions> | ((text: string) => string) | undefined;
@@ -16,7 +16,7 @@ export default function tocPlugin(userOptions: Partial<Options> = {}) {
     options.slugify = createSlugifier(slugify);
   }
 
-  return function (site: Site) {
+  return function (site: Lume.Site) {
     site.hooks.addMarkdownItPlugin(toc, options);
   };
 }

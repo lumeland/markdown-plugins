@@ -1,8 +1,8 @@
 import footnotes, { Options } from "./footnotes/mod.ts";
+import "lume/types.ts";
 
 export default function footnotesPlugin(userOptions: Partial<Options> = {}) {
-  // deno-lint-ignore no-explicit-any
-  return function (site: any) {
+  return function (site: Lume.Site) {
     site.hooks.addMarkdownItPlugin(footnotes, userOptions);
   };
 }

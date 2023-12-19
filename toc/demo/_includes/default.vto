@@ -9,29 +9,29 @@
   <header class="doc-header">
     <h1>{{ title }}</h1>
   
-    {% if toc.length %}  
+    {{ if toc.length }}
     <nav class="toc">
       <ol>
-        {% for item in toc %}
+        {{ for item of toc }}
         <li>
           <a href="#{{ item.slug }}">{{ item.text }}</a>
   
-          {% if item.children.length %}
+          {{ if item.children.length }}
           <ul>
-            {% for child in item.children %}
+            {{ for child of item.children }}
             <li>
               <a href="#{{ child.slug }}">{{ child.text }}</a>
             </li>
-            {% endfor %}
+            {{ /for }}
           </ul>
-          {% endif %}
+          {{ /if }}
         </li>
-        {% endfor %}
+        {{ /for }}
       </ol>
     </nav>
-    {% endif %}
+    {{ /if }}
   </header>
   
-  {{ content | safe }}
+  {{ content }}
 </body>
 </html>

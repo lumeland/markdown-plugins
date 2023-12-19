@@ -3,20 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ title }}</title>
 </head>
 <body>
-  {{ content | safe }}
+  {{ content }}
 
-  {% if footnotes.length %}
+  {{ if footnotes.length }}
   <ul>
-    {% for note in footnotes %}
+    {{ for note of footnotes }}
     <li id={{ note.id }}>
-      {{ note.content | safe }}
+      {{ note.content }}
       <a href="#{{ note.refId }}" class="footnote-backref">↩</a>
     </li>
-    {% endfor %}
+    {{ /for }}
   </ul>  
-  {% endif %}
+  {{ /if }}
 </body>
 </html>

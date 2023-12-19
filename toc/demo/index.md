@@ -1,6 +1,6 @@
 ---
 title: Demo of TOC plugin
-layout: default.njk
+layout: default.vto
 ---
 
 This is the content

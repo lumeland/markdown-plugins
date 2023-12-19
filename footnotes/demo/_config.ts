@@ -11,6 +11,6 @@ const markdown = {
 
 const site = lume({}, { markdown });
 
-site.data("layout", "default.njk");
+site.data("layout", "default.vto");
 
 export default site;
