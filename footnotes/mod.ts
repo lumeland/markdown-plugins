@@ -254,7 +254,10 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
       }
 
       if (tok.type === "footnote_reference_close") {
-        currentFootnote!.content = md.renderer.render(currentTokens);
+        currentFootnote!.content = md.renderer.render(
+          currentTokens,
+          state.md.options,
+        );
         currentTokens = undefined;
         return false;
       }
