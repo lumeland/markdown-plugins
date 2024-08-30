@@ -25,6 +25,20 @@ anchors of the headers.
 
 [See the demo](toc/demo/)
 
+There are two ways to generate the anchors: `linkInsideHeader` and `headerLink`
+(used by default). To change to `linkInsideHeader`:
+
+```ts
+import toc, { linkInsideHeader } from "lume_markdown_plugins/toc.ts";
+
+const site = lume()
+  .use(toc({
+    anchor: linkInsideHeader(),
+  }));
+
+export default site;
+```
+
 ## Footnotes
 
 Plugin to collect all footnotes and save them in the `footnotes` key of the page
@@ -33,10 +47,10 @@ data, allowing to insert them in the layouts.
 ## Usage
 
 ```ts
-import toc from "https://deno.land/x/lume_markdown_plugins/toc.ts";
-import title from "https://deno.land/x/lume_markdown_plugins/title.ts";
-import image from "https://deno.land/x/lume_markdown_plugins/image.ts";
-import footnotes from "https://deno.land/x/lume_markdown_plugins/footnotes.ts";
+import toc from "lume_markdown_plugins/toc.ts";
+import title from "lume_markdown_plugins/title.ts";
+import image from "lume_markdown_plugins/image.ts";
+import footnotes from "lume_markdown_plugins/footnotes.ts";
 
 const site = lume()
   .use(toc())

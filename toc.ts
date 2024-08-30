@@ -1,4 +1,5 @@
 import toc, { defaults, Options as TocOptions } from "./toc/mod.ts";
+export * from "./toc/anchors.ts";
 import createSlugifier, {
   Options as SlugifierOptions,
 } from "lume/core/slugifier.ts";
