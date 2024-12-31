@@ -44,6 +44,11 @@ export default site;
 Plugin to collect all footnotes and save them in the `footnotes` key of the page
 data, allowing to insert them in the layouts.
 
+## Wikilinks
+
+Plugin to parse all wikilinks of in the markdown files and convert to links. You
+can use the `wikilinks` helper to generate the missing pages:
+
 ## Usage
 
 ```ts
@@ -51,12 +56,14 @@ import toc from "lume_markdown_plugins/toc.ts";
 import title from "lume_markdown_plugins/title.ts";
 import image from "lume_markdown_plugins/image.ts";
 import footnotes from "lume_markdown_plugins/footnotes.ts";
+import wikilinks from "lume_markdown_plugins/wikilinks.ts";
 
 const site = lume()
   .use(toc())
   .use(title())
-  .use(image());
-  .use(footnotes());
+  .use(image())
+  .use(footnotes())
+  .use(wikilinks());
 
 export default site;
 ```
