@@ -1,22 +1,13 @@
 export const renderOrder = 1;
 
-export default function* ({ search }: Lume.Data) {
-  const duplicates = new Set();
+export default function* ({ wikilinks }: Lume.Data) {
+  for (const { url, title } of wikilinks.missing()) {
+    yield {
+      url,
+      content: `<h1>${title}</h1>
 
-  for (const page of search.pages()) {
-    for (const [url, title] of page.wikilinks) {
-      if (duplicates.has(url)) {
-        continue;
-      }
-      duplicates.add(url);
-
-      yield {
-        url,
-        content: `<h1>${title}</h1>
-
-        This page was not created yet.
-        `,
-      };
-    }
+      This page was not created yet.
+      `,
+    };
   }
 }

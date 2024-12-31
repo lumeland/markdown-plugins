@@ -5,6 +5,8 @@ import wikilinks from "../../wikilinks.ts";
 const site = lume();
 
 site.data("layout", "default.vto");
-site.use(wikilinks());
+site.use(wikilinks({
+  basePath: "pages",
+}));
 
 export default site;

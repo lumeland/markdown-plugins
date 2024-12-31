@@ -6,7 +6,6 @@ function parseLink(
   state: any,
   silent: boolean,
   options: Options,
-  store?: Map<string, string>,
 ) {
   const max = state.posMax;
   const start = state.pos;
@@ -43,9 +42,7 @@ function parseLink(
   const href = options.url(content);
 
   // Save the link
-  if (store) {
-    store.set(href, content);
-  }
+  options.wikilinks.set(href, content);
 
   // Open the link
   const token_o = state.push("link_open", "a", 1);
@@ -75,8 +72,8 @@ export interface Options {
   /** Title to URL function */
   url: URLFunction;
 
-  /** Key to save the links found per page */
-  key: string;
+  /** Map to save the links found */
+  wikilinks: Map<string, string>;
 
   // Extra attributes to add to the links
   attributes: Record<string, string>;
@@ -84,7 +81,7 @@ export interface Options {
 
 export const defaults: Options = {
   url,
-  key: "wikilinks",
+  wikilinks: new Map(),
   attributes: {},
 };
 
@@ -94,15 +91,7 @@ export default function wikilink(md: any, userOptions: Partial<Options> = {}) {
   md.inline.ruler.after(
     "emphasis",
     "wikilinks",
-    (state: any, silent: boolean) => {
-      const data = state.env.data?.page?.data;
-      const store = data ? data[options.key] || new Map() : undefined;
-      const result = parseLink(state, silent, options, store);
-      if (store) {
-        data[options.key] = store;
-      }
-      return result;
-    },
+    (state: any, silent: boolean) => parseLink(state, silent, options),
   );
 }
 
