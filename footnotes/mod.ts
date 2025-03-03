@@ -257,6 +257,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
         currentFootnote!.content = md.renderer.render(
           currentTokens,
           state.md.options,
+          state.env
         );
         currentTokens = undefined;
         return false;
