@@ -46,8 +46,37 @@ data, allowing to insert them in the layouts.
 
 ## Wikilinks
 
-Plugin to parse all wikilinks of in the markdown files and convert to links. You
-can use the `wikilinks` helper to generate the missing pages:
+Plugin to parse all wikilinks of in the markdown files and convert to links.
+
+```ts
+import wikilinks from "lume_markdown_plugins/wikilinks.ts";
+
+const site = lume();
+site.use(wikilinks());
+
+// Search and replace the wikilinks with the final URLs
+site.process([".html"], (pages) => {
+  for (const page of pages) {
+    // Search all wikilinks in the page
+    for (const link of page.document!.querySelectorAll("a[data-wikilink]")) {
+      // Get the link id and remove the attribute
+      const id = link.getAttribute("data-wikilink");
+      link.removeAttribute("data-wikilink");
+
+      // Search a page with this id
+      const found = pages.find((p) => p.data.id === id);
+
+      if (found) {
+        link.setAttribute("href", found.data.url);
+      } else {
+        link.setAttribute("title", "This page does not exist");
+      }
+    }
+  }
+});
+
+export default site;
+```
 
 ## Usage
 

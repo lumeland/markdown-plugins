@@ -1,4 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
+import { slugify } from "../utils.ts";
+
 const START_CHAR = 0x5B /* [ */;
 const END_CHAR = 0x5D /* ] */;
 
@@ -39,18 +41,12 @@ function parseLink(
 
   state.posMax = state.pos;
   state.pos = start + 1;
-  const href = options.url(content);
-
-  // Save the link
-  options.wikilinks.set(href, content);
 
   // Open the link
   const token_o = state.push("link_open", "a", 1);
   token_o.markup = "wikilink";
   token_o.info = "auto";
-  const attrs = Object.entries(options.attributes);
-  attrs.push(["href", href]);
-  token_o.attrs = attrs;
+  token_o.attrs = [["data-wikilink", options.slugify(content)]];
 
   // Create the text content
   const token_t = state.push("text", "", 0);
@@ -66,23 +62,13 @@ function parseLink(
   return true;
 }
 
-type URLFunction = (x: string) => string;
-
 export interface Options {
-  /** Title to URL function */
-  url: URLFunction;
-
-  /** Map to save the links found */
-  wikilinks: Map<string, string>;
-
-  // Extra attributes to add to the links
-  attributes: Record<string, string>;
+  /** Slugify function */
+  slugify: (x: string) => string;
 }
 
 export const defaults: Options = {
-  url,
-  wikilinks: new Map(),
-  attributes: {},
+  slugify,
 };
 
 export default function wikilink(md: any, userOptions: Partial<Options> = {}) {
@@ -93,12 +79,4 @@ export default function wikilink(md: any, userOptions: Partial<Options> = {}) {
     "wikilinks",
     (state: any, silent: boolean) => parseLink(state, silent, options),
   );
-}
-
-function url(x: string): string {
-  const slug = encodeURIComponent(
-    String(x).trim().toLowerCase().replace(/\s+/g, "-"),
-  );
-
-  return `/${slug}/`;
 }
