@@ -59,6 +59,40 @@ your templates:
 Plugin to collect all footnotes and save them in the `footnotes` key of the page
 data, allowing to insert them in the layouts.
 
+## Wikilinks
+
+Plugin to parse all wikilinks of in the markdown files and convert to links.
+
+```ts
+import wikilinks from "lume_markdown_plugins/wikilinks.ts";
+
+const site = lume();
+site.use(wikilinks());
+
+// Search and replace the wikilinks with the final URLs
+site.process([".html"], (pages) => {
+  for (const page of pages) {
+    // Search all wikilinks in the page
+    for (const link of page.document!.querySelectorAll("a[data-wikilink]")) {
+      // Get the link id and remove the attribute
+      const id = link.getAttribute("data-wikilink");
+      link.removeAttribute("data-wikilink");
+
+      // Search a page with this id
+      const found = pages.find((p) => p.data.id === id);
+
+      if (found) {
+        link.setAttribute("href", found.data.url);
+      } else {
+        link.setAttribute("title", "This page does not exist");
+      }
+    }
+  }
+});
+
+export default site;
+```
+
 ## Usage
 
 ```ts
@@ -66,12 +100,14 @@ import toc from "lume_markdown_plugins/toc.ts";
 import title from "lume_markdown_plugins/title.ts";
 import image from "lume_markdown_plugins/image.ts";
 import footnotes from "lume_markdown_plugins/footnotes.ts";
+import wikilinks from "lume_markdown_plugins/wikilinks.ts";
 
 const site = lume()
   .use(toc())
   .use(title())
-  .use(image());
-  .use(footnotes());
+  .use(image())
+  .use(footnotes())
+  .use(wikilinks());
 
 export default site;
 ```

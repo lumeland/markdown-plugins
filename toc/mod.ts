@@ -5,7 +5,7 @@
 
 // deno-lint-ignore-file no-explicit-any
 import { headerLink } from "./anchors.ts";
-import { getRawText } from "../utils.ts";
+import { getRawText, slugify } from "../utils.ts";
 
 export interface Options {
   /** Minimum level to apply anchors. */
@@ -126,10 +126,4 @@ export default function toc(md: any, userOptions: Partial<Options> = {}) {
 
     data[options.key] = headings2ast(state, data.url);
   });
-}
-
-function slugify(x: string): string {
-  return encodeURIComponent(
-    String(x).trim().toLowerCase().replace(/\s+/g, "-"),
-  );
 }
