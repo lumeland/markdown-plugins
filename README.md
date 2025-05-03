@@ -39,6 +39,21 @@ const site = lume()
 export default site;
 ```
 
+## References
+
+Plugins to collect all internal references, so you can create the backlinks of
+the pages. It creates the `references` variable in all pages with the URL of the
+pages found. To create a list of backlinks, you can add the following code to
+your templates:
+
+```html
+<ul>
+  {{ for link of search.pages(`references*='${url}'`) }}
+  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+  {{ /for }}
+</ul>
+```
+
 ## Footnotes
 
 Plugin to collect all footnotes and save them in the `footnotes` key of the page

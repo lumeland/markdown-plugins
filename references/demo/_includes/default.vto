@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  {{ content }}
+
+  <hr>
+
+  <h3>Backlinks:</h3>
+  <ul>
+    {{ for link of search.pages(`references*='${url}'`) }}
+    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {{ /for }}
+  </ul>
+</body>
+</html>
