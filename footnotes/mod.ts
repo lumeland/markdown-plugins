@@ -29,15 +29,19 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
   const isSpace = md.utils.isSpace;
 
   md.renderer.rules.footnote_reference = function (tokens: any[], idx: number) {
-    const { id, label } = tokens[idx].meta;
+    const { id, subId, label } = tokens[idx].meta;
     const attrs = Object.entries(options.referenceAttrs)
       .map(([key, value]) => `${key}="${value}"`);
 
     attrs.push(`href="#${options.idPrefix}${id}"`);
-    attrs.push(`id="${options.referenceIdPrefix}${id}"`);
+    attrs.push(`id="${options.referenceIdPrefix}${idSuffix(id, subId)}"`);
 
     return `<sup><a ${attrs.join(" ")}>${label}</a></sup>`;
   };
+
+  function idSuffix(id: number, subId: number): string {
+    return subId > 0 ? `${id}:${subId}` : `${id}`;
+  }
 
   // Process footnote block definition
   function blocks(
@@ -93,7 +97,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
     openToken.level = state.level++;
     state.tokens.push(openToken);
 
-    footnotes.set(id, { id, label });
+    footnotes.set(id, { id, label, subId: -1 });
 
     const oldBMark = state.bMarks[startLine];
     const oldTShift = state.tShift[startLine];
@@ -176,10 +180,11 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
       const label = id.toString();
 
       const token = state.push("footnote_reference", "", 0);
-      token.meta = { id, label };
+      token.meta = { id, label, subId: 0 };
 
       footnotes.set(id, {
         id,
+        subId: 0,
         label,
         content: `<p>${state.src.slice(labelStart, labelEnd)}</p>`,
       });
@@ -227,6 +232,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
       const label = state.src.slice(labelStart, labelEnd);
       const footnote = searchFootnote(state, label);
       const token = state.push("footnote_reference", "", 0);
+      footnote!.subId++;
       token.meta = { ...footnote };
     }
 
@@ -286,17 +292,26 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
     }
 
     const footnotes = getFootnotes(state);
-    data[options.key] = Array.from(footnotes.values()).map((footnote) => ({
-      id: `${options.idPrefix}${footnote.id}`,
-      refId: `${options.referenceIdPrefix}${footnote.id}`,
-      label: footnote.label,
-      content: footnote.content,
-    }));
+    data[options.key] = Array.from(footnotes.values()).map((footnote) => {
+      const refIds = Array.from(
+        { length: footnote.subId + 1 },
+        (_, i) => `${options.referenceIdPrefix}${idSuffix(footnote.id, i)}`,
+      );
+
+      return {
+        id: `${options.idPrefix}${footnote.id}`,
+        refId: refIds.at(-1),
+        refIds,
+        label: footnote.label,
+        content: footnote.content,
+      };
+    });
   });
 }
 
 interface Footnote {
   id: number;
+  subId: number;
   label?: string;
   content?: string;
   tokens?: any[];

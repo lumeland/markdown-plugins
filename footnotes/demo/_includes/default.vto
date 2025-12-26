@@ -12,7 +12,9 @@
     {{ for note of footnotes }}
     <li id={{ note.id }}>
       {{ note.content }}
-      <a href="#{{ note.refId }}" class="footnote-backref">↩</a>
+      {{ for refId of note.refIds }}
+        <a href="#{{ refId }}" class="footnote-backref">↩</a>
+      {{ /for }}
     </li>
     {{ /for }}
   </ul>  
