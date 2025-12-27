@@ -10,6 +10,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - References plugin.
 
+### Fixed
+- Handle multiple references to the same footnote [#3]
+
 ## [0.9.0] - 2025-03-04
 ### Changed
 - Simplified Wikilinks plugin.
