@@ -29,7 +29,13 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
   const isSpace = md.utils.isSpace;
 
   md.renderer.rules.footnote_reference = function (tokens: any[], idx: number) {
-    const { id, subId, label } = tokens[idx].meta;
+    const meta = tokens[idx]?.meta;
+
+    if (!meta) {
+      return "";
+    }
+
+    const { id, subId, label } = meta;
     const attrs = Object.entries(options.referenceAttrs)
       .map(([key, value]) => `${key}="${value}"`);
 
@@ -173,7 +179,6 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
 
     // We found the end of the link, and know for a fact it's a valid link;
     // so all that's left to do is to call tokenizer.
-    //
     if (!silent) {
       const footnotes = getFootnotes(state);
       const id = footnotes.size + 1;
@@ -232,7 +237,11 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
       const label = state.src.slice(labelStart, labelEnd);
       const footnote = searchFootnote(state, label);
       const token = state.push("footnote_reference", "", 0);
-      footnote!.subId++;
+
+      if (!footnote) {
+        return false;
+      }
+      footnote.subId++;
       token.meta = { ...footnote };
     }
 
