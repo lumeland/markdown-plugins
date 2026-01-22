@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.11.0] - Unreleased
+### Added
+- Footnotes: allow customizing how the reference links are rendered
+
 ## [0.10.1] - 2026-01-15
 ### Fixed
 - Footnotes: Don't fail when a reference without a footnote is found.
