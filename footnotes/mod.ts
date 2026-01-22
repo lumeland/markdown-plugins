@@ -10,8 +10,14 @@ export interface Options {
   /** The prefix to assign to all references ids */
   referenceIdPrefix: string;
 
-  /** HTML attributes to the <sup> element used for the reference */
+  /** HTML attributes to the element used for the reference */
   referenceAttrs: Record<string, string>;
+
+  /**
+   * The function to transform the HTML content of the reference.
+   * It receives the label and attributes (already propagated with href and id) of the reference as its arguments.
+   */
+  referenceFn: (label: string, attrs: Record<string, string>) => string;
 }
 
 export const defaults: Options = {
@@ -21,6 +27,10 @@ export const defaults: Options = {
   referenceAttrs: {
     class: "footnote-ref",
   },
+  referenceFn: (label, attrs) =>
+    `<sup><a ${
+      Object.entries(attrs).map(([key, value]) => `${key}="${value}"`).join(" ")
+    }>${label}</a></sup>`,
 };
 
 export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
@@ -36,13 +46,12 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
     }
 
     const { id, subId, label } = meta;
-    const attrs = Object.entries(options.referenceAttrs)
-      .map(([key, value]) => `${key}="${value}"`);
+    const attrs = Object.assign({}, options.referenceAttrs, {
+      href: `#${options.idPrefix}${id}`,
+      id: `${options.referenceIdPrefix}${idSuffix(id, subId)}`,
+    } as Record<string, string>);
 
-    attrs.push(`href="#${options.idPrefix}${id}"`);
-    attrs.push(`id="${options.referenceIdPrefix}${idSuffix(id, subId)}"`);
-
-    return `<sup><a ${attrs.join(" ")}>${label}</a></sup>`;
+    return options.referenceFn(label, attrs);
   };
 
   function idSuffix(id: number, subId: number): string {
