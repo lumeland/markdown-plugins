@@ -40,6 +40,8 @@ export interface Node {
   children: Node[];
 }
 
+const STARTS_WITH_LETTER = /^[a-z]/i;
+
 export default function toc(md: any, userOptions: Partial<Options> = {}) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
@@ -68,6 +70,11 @@ export default function toc(md: any, userOptions: Partial<Options> = {}) {
 
       // Get the slug
       let slug = token.attrGet("id") || options.slugify(text);
+
+      // Make sure the slug starts with a letter
+      if (!STARTS_WITH_LETTER.test(slug)) {
+        slug = `h_${slug}`;
+      }
 
       // Make sure the slug is unique
       while (slugs.has(slug)) {

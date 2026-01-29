@@ -10,7 +10,7 @@ export interface Options extends Omit<TocOptions, "slugify"> {
 }
 
 export default function tocPlugin(userOptions: Partial<Options> = {}) {
-  const options = { ...defaults, ...userOptions };
+  const options = { ...defaults, ...{ slugify: undefined }, ...userOptions };
   const { slugify } = options;
 
   if (!slugify || typeof slugify !== "function") {
