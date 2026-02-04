@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.12.0 - Unreleased
+### Added
+- `footnotes` plugin: export `Footnote` type.
+
 ## [0.11.1] - 2026-01-29
 ### Fixed
 - Use Lume's slugifier by default
