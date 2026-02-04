@@ -20,6 +20,14 @@ export interface Options {
   referenceFn: (label: string, attrs: Record<string, string>) => string;
 }
 
+export interface Footnote {
+  id: string;
+  label?: string;
+  content?: string;
+  refId?: string;
+  refIds?: string[];
+}
+
 export const defaults: Options = {
   key: "footnotes",
   idPrefix: "fn-",
@@ -267,7 +275,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
       return;
     }
 
-    let currentFootnote: Footnote | undefined;
+    let currentFootnote: FootnoteItem | undefined;
     let currentTokens: any[] | undefined;
 
     state.tokens = state.tokens.filter(function (tok: any) {
@@ -322,12 +330,12 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
         refIds,
         label: footnote.label,
         content: footnote.content,
-      };
+      } satisfies Footnote;
     });
   });
 }
 
-interface Footnote {
+interface FootnoteItem {
   id: number;
   subId: number;
   label?: string;
@@ -335,9 +343,9 @@ interface Footnote {
   tokens?: any[];
 }
 
-function getFootnotes(state: any): Map<number, Footnote> {
+function getFootnotes(state: any): Map<number, FootnoteItem> {
   if (!state.env.fn) {
-    state.env.fn = new Map<number, Footnote>();
+    state.env.fn = new Map<number, FootnoteItem>();
   }
 
   return state.env.fn;
