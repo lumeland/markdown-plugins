@@ -1,3 +1,5 @@
+import type { StateCore } from "npm:markdown-it@^15.0.0";
+
 export interface HeaderLinkOptions {
   class: string | false;
 }
@@ -18,8 +20,7 @@ const headerLinkDefaults: HeaderLinkOptions = {
 export function headerLink(userOptions: Partial<HeaderLinkOptions> = {}) {
   const options = Object.assign({}, headerLinkDefaults, userOptions);
 
-  // deno-lint-ignore no-explicit-any
-  return function anchor(slug: string, state: any, i: number) {
+  return function anchor(slug: string, state: StateCore, i: number) {
     const linkOpen = new state.Token("link_open", "a", 1);
     linkOpen.attrSet("href", `#${slug}`);
 
@@ -30,7 +31,7 @@ export function headerLink(userOptions: Partial<HeaderLinkOptions> = {}) {
     const content = new state.Token("inline", "", 0);
     content.children = [
       linkOpen,
-      ...state.tokens[i + 1].children,
+      ...state.tokens[i + 1].children!,
       new state.Token("link_close", "a", -1),
     ];
 
@@ -66,8 +67,7 @@ export function linkInsideHeader(
 ) {
   const options = Object.assign({}, LinkInsideHeaderOptions, userOptions);
 
-  // deno-lint-ignore no-explicit-any
-  return function anchor(slug: string, state: any, i: number) {
+  return function anchor(slug: string, state: StateCore, i: number) {
     const linkOpen = new state.Token("link_open", "a", 1);
     linkOpen.attrSet("href", `#${slug}`);
 
@@ -93,9 +93,9 @@ export function linkInsideHeader(
     space.content = " ";
 
     if (options.placement === "after") {
-      state.tokens[i + 1].children.push(space, ...linkTokens);
+      state.tokens[i + 1].children!.push(space, ...linkTokens);
     } else {
-      state.tokens[i + 1].children.unshift(...linkTokens, space);
+      state.tokens[i + 1].children!.unshift(...linkTokens, space);
     }
   };
 }

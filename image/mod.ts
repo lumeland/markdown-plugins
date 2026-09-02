@@ -1,4 +1,5 @@
-// deno-lint-ignore-file no-explicit-any
+import type { MarkdownIt, Token } from "npm:markdown-it@^15.0.0";
+
 export interface Options {
   /** Key to save the image in the page data */
   key: string;
@@ -10,17 +11,20 @@ export const defaults: Options = {
   attribute: "main",
 };
 
-export default function image(md: any, userOptions: Partial<Options> = {}) {
+export default function image(
+  md: MarkdownIt,
+  userOptions: Partial<Options> = {},
+) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
-  function getImage(tokens: any[], img: PageImage): PageImage {
+  function getImage(tokens: Token[], img: PageImage): PageImage {
     for (const token of tokens) {
       if (token.type === "image") {
         let src = "";
         let main = false;
-        for (const [name, value] of token.attrs) {
+        for (const [name, value] of token.attrs!) {
           if (name === "src") {
-            src = value;
+            src = value as string;
           }
           if (name === options.attribute) {
             main = true;
@@ -30,7 +34,7 @@ export default function image(md: any, userOptions: Partial<Options> = {}) {
         const index = token.attrIndex(options.attribute);
 
         if (index !== -1) {
-          token.attrs.splice(index, 1);
+          token.attrs!.splice(index, 1);
         }
 
         if (src) {
@@ -57,8 +61,12 @@ export default function image(md: any, userOptions: Partial<Options> = {}) {
     return img;
   }
 
-  md.core.ruler.push("getImage", function (state: any) {
-    const data = state.env.data?.page?.data;
+  md.core.ruler.push("getImage", function (state) {
+    const data = (state.env.data as
+      | { page?: { data?: Record<string, unknown> } }
+      | undefined)
+      ?.page
+      ?.data;
 
     if (!data || data[options.key]) {
       return;

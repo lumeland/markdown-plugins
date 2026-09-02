@@ -1,4 +1,5 @@
-// deno-lint-ignore-file no-explicit-any
+import type { MarkdownIt, Token } from "npm:markdown-it@^15.0.0";
+
 export interface Options {
   /** Site location */
   location: URL;
@@ -13,12 +14,12 @@ export const defaults: Options = {
 };
 
 export default function references(
-  md: any,
+  md: MarkdownIt,
   userOptions: Partial<Options> = {},
 ) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
-  function getReferences(tokens: any[], links: Set<string>, pageURL: URL) {
+  function getReferences(tokens: Token[], links: Set<string>, pageURL: URL) {
     for (const token of tokens) {
       if (token.type !== "link_open") {
         if (token.children) {
@@ -33,7 +34,7 @@ export default function references(
         continue;
       }
 
-      const url = URL.parse(href, pageURL);
+      const url = URL.parse(href as string, pageURL);
 
       // External link
       if (url?.origin !== pageURL.origin) {
@@ -49,15 +50,19 @@ export default function references(
     }
   }
 
-  md.core.ruler.push("getReferences", function (state: any) {
-    const data = state.env.data?.page?.data;
+  md.core.ruler.push("getReferences", function (state) {
+    const data = (state.env.data as
+      | { page?: { data?: Record<string, unknown> } }
+      | undefined)
+      ?.page
+      ?.data;
 
     if (!data) {
       return;
     }
 
-    const link = new Set<string>(data[options.key] ?? []);
-    const pageUrl = pathToUrl(data.url, options.location);
+    const link = new Set<string>(data[options.key] as string[] ?? []);
+    const pageUrl = pathToUrl(data.url as string, options.location);
 
     getReferences(state.tokens, link, pageUrl);
     data[options.key] = Array.from(link);

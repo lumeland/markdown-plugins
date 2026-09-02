@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any
+import type { MarkdownIt, Token } from "npm:markdown-it@^15.0.0";
 import { getRawText } from "../utils.ts";
 
 export interface Options {
@@ -9,7 +9,10 @@ export interface Options {
   key: string;
 
   /** Function to transform the title before saving it */
-  transform?: (title: string | undefined, data: any) => string;
+  transform?: (
+    title: string | undefined,
+    data: Record<string, unknown>,
+  ) => string;
 }
 
 export const defaults: Options = {
@@ -17,10 +20,13 @@ export const defaults: Options = {
   key: "title",
 };
 
-export default function title(md: any, userOptions: Partial<Options> = {}) {
+export default function title(
+  md: MarkdownIt,
+  userOptions: Partial<Options> = {},
+) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
-  function getTitle(tokens: any[]): string | undefined {
+  function getTitle(tokens: Token[]): string | undefined {
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];
 
@@ -29,16 +35,20 @@ export default function title(md: any, userOptions: Partial<Options> = {}) {
       }
 
       // Calculate the level
-      const level = parseInt(token.tag.substr(1), 10);
+      const level = parseInt(token.tag.substring(1), 10);
 
       if (options.level === 0 || level === options.level) {
-        return getRawText(tokens[i + 1].children);
+        return getRawText(tokens[i + 1].children!);
       }
     }
   }
 
-  md.core.ruler.push("getTitle", function (state: any) {
-    const data = state.env.data?.page?.data;
+  md.core.ruler.push("getTitle", function (state) {
+    const data = (state.env.data as
+      | { page?: { data?: Record<string, unknown> } }
+      | undefined)
+      ?.page
+      ?.data;
 
     if (!data || data[options.key]) {
       return;

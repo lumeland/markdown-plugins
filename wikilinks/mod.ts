@@ -1,11 +1,11 @@
-// deno-lint-ignore-file no-explicit-any
+import type { MarkdownIt, StateInline } from "npm:markdown-it@^15.0.0";
 import { slugify } from "../utils.ts";
 
 const START_CHAR = 0x5B /* [ */;
 const END_CHAR = 0x5D /* ] */;
 
 function parseLink(
-  state: any,
+  state: StateInline,
   silent: boolean,
   options: Options,
 ) {
@@ -71,12 +71,15 @@ export const defaults: Options = {
   slugify,
 };
 
-export default function wikilink(md: any, userOptions: Partial<Options> = {}) {
+export default function wikilink(
+  md: MarkdownIt,
+  userOptions: Partial<Options> = {},
+) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
   md.inline.ruler.after(
     "emphasis",
     "wikilinks",
-    (state: any, silent: boolean) => parseLink(state, silent, options),
+    (state, silent) => parseLink(state, silent, options),
   );
 }

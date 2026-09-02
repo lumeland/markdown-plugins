@@ -3,9 +3,10 @@
  * Copyright (c) 2018 Fabio Zendhi Nagao
  */
 
-// deno-lint-ignore-file no-explicit-any
 import { headerLink } from "./anchors.ts";
 import { getRawText, slugify } from "../utils.ts";
+
+import type { MarkdownIt, StateCore } from "npm:markdown-it@^15.0.0";
 
 export interface Options {
   /** Minimum level to apply anchors. */
@@ -15,7 +16,7 @@ export interface Options {
   key: string;
 
   /** Anchor type */
-  anchor: false | ((slug: string, state: any, idx: number) => void);
+  anchor: false | ((slug: string, state: StateCore, idx: number) => void);
 
   /** Slugify function */
   slugify: (x: string) => string;
@@ -42,11 +43,14 @@ export interface Node {
 
 const STARTS_WITH_LETTER = /^[a-z]/i;
 
-export default function toc(md: any, userOptions: Partial<Options> = {}) {
+export default function toc(
+  md: MarkdownIt,
+  userOptions: Partial<Options> = {},
+) {
   const options = Object.assign({}, defaults, userOptions) as Options;
 
-  function headings2ast(state: any, pageUrl?: string): Node[] {
-    const tokens: any[] = state.tokens;
+  function headings2ast(state: StateCore, pageUrl?: string): Node[] {
+    const tokens = state.tokens;
     const ast: Node = { level: 0, text: "", slug: "", url: "", children: [] };
     const stack = [ast];
     const slugs = new Set<string>();
@@ -59,17 +63,17 @@ export default function toc(md: any, userOptions: Partial<Options> = {}) {
       }
 
       // Calculate the level
-      const level = parseInt(token.tag.substr(1), 10);
+      const level = parseInt(token.tag.substring(1), 10);
 
       if (level < options.level) {
         continue;
       }
 
       // Get the text
-      const text = getRawText(tokens[i + 1].children);
+      const text = getRawText(tokens[i + 1].children!);
 
       // Get the slug
-      let slug = token.attrGet("id") || options.slugify(text);
+      let slug = token.attrGet("id") as string || options.slugify(text);
 
       // Make sure the slug starts with a letter
       if (!STARTS_WITH_LETTER.test(slug)) {
@@ -124,13 +128,17 @@ export default function toc(md: any, userOptions: Partial<Options> = {}) {
     return ast.children;
   }
 
-  md.core.ruler.push("generateTocAst", function (state: any) {
-    const data = state.env.data?.page?.data;
+  md.core.ruler.push("generateTocAst", function (state) {
+    const data = (state.env.data as
+      | { page?: { data?: Record<string, unknown> } }
+      | undefined)
+      ?.page
+      ?.data;
 
     if (!data) {
       return;
     }
 
-    data[options.key] = headings2ast(state, data.url);
+    data[options.key] = headings2ast(state, data.url as string);
   });
 }

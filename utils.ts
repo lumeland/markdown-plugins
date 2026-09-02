@@ -1,5 +1,6 @@
-// deno-lint-ignore no-explicit-any
-export function getRawText(tokens: any[]) {
+import type { Token } from "npm:markdown-it@^15.0.0";
+
+export function getRawText(tokens: Token[]) {
   let text = "";
 
   for (const token of tokens) {

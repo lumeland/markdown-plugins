@@ -1,4 +1,10 @@
-// deno-lint-ignore-file no-explicit-any
+import type {
+  MarkdownIt,
+  StateBlock,
+  StateCore,
+  StateInline,
+  Token,
+} from "npm:markdown-it@^15.0.0";
 
 export interface Options {
   /** Key to save the title in the page data */
@@ -41,25 +47,28 @@ export const defaults: Options = {
     }>${label}</a></sup>`,
 };
 
-export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
+export default function footNotes(
+  md: MarkdownIt,
+  userOptions: Partial<Options> = {},
+) {
   const options = Object.assign({}, defaults, userOptions) as Options;
   const parseLinkLabel = md.helpers.parseLinkLabel;
   const isSpace = md.utils.isSpace;
 
-  md.renderer.rules.footnote_reference = function (tokens: any[], idx: number) {
+  md.renderer.rules.footnote_reference = function (tokens, idx) {
     const meta = tokens[idx]?.meta;
 
     if (!meta) {
       return "";
     }
 
-    const { id, subId } = meta;
+    const { id, subId } = meta as { id: number; subId: number };
     const attrs = Object.assign({}, options.referenceAttrs, {
       href: `#${options.idPrefix}${id}`,
       id: `${options.referenceIdPrefix}${idSuffix(id, subId)}`,
     } as Record<string, string>);
 
-    const label = subId > 0 ? `${id}:${subId}` : id;
+    const label = subId > 0 ? `${id}:${subId}` : id.toString();
     return options.referenceFn(label, attrs);
   };
 
@@ -69,7 +78,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
 
   // Process footnote block definition
   function blocks(
-    state: any,
+    state: StateBlock,
     startLine: number,
     endLine: number,
     silent: boolean,
@@ -158,7 +167,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
       state.sCount[startLine] += state.blkIndent;
     }
 
-    state.md.block.tokenize(state, startLine, endLine, true);
+    state.md.block.tokenize(state, startLine, endLine);
 
     state.parentType = oldParentType;
     state.blkIndent -= 4;
@@ -174,7 +183,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
   }
 
   // Process inline footnotes (^[...])
-  function inlineFootnotes(state: any, silent: boolean) {
+  function inlineFootnotes(state: StateInline, silent: boolean) {
     const max = state.posMax;
     const start = state.pos;
 
@@ -218,7 +227,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
   }
 
   // Process footnote references ([^...])
-  function references(state: any, silent: boolean) {
+  function references(state: StateInline, silent: boolean) {
     const max = state.posMax;
     const start = state.pos;
 
@@ -268,7 +277,7 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
   }
 
   // Glue footnote tokens to end of token stream
-  function footnote_tail(state: any) {
+  function footnote_tail(state: StateCore) {
     const footnotes = getFootnotes(state);
 
     if (!footnotes.size) {
@@ -276,18 +285,18 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
     }
 
     let currentFootnote: FootnoteItem | undefined;
-    let currentTokens: any[] | undefined;
+    let currentTokens: Token[] | undefined;
 
-    state.tokens = state.tokens.filter(function (tok: any) {
+    state.tokens = state.tokens.filter(function (tok) {
       if (tok.type === "footnote_reference_open") {
-        currentFootnote = footnotes.get(tok.meta.id)!;
+        currentFootnote = footnotes.get(tok.meta!.id as number)!;
         currentTokens = [];
         return false;
       }
 
       if (tok.type === "footnote_reference_close") {
         currentFootnote!.content = md.renderer.render(
-          currentTokens,
+          currentTokens!,
           state.md.options,
           state.env,
         );
@@ -310,8 +319,12 @@ export default function footNotes(md: any, userOptions: Partial<Options> = {}) {
   md.inline.ruler.after("footnote_inline", "footnote_reference", references);
   md.core.ruler.after("inline", "footnote_tail", footnote_tail);
 
-  md.core.ruler.push("saveFootnotes", function (state: any) {
-    const data = state.env.data?.page?.data;
+  md.core.ruler.push("saveFootnotes", function (state) {
+    const data = (state.env.data as
+      | { page?: { data?: Record<string, unknown> } }
+      | undefined)
+      ?.page
+      ?.data;
 
     if (!data || data[options.key]) {
       return;
@@ -341,18 +354,20 @@ interface FootnoteItem {
   subId: number;
   label?: string;
   content?: string;
-  tokens?: any[];
+  tokens?: Token[];
 }
 
-function getFootnotes(state: any): Map<number, FootnoteItem> {
+function getFootnotes(
+  state: StateCore | StateBlock | StateInline,
+): Map<number, FootnoteItem> {
   if (!state.env.fn) {
     state.env.fn = new Map<number, FootnoteItem>();
   }
 
-  return state.env.fn;
+  return state.env.fn as Map<number, FootnoteItem>;
 }
 
-function searchFootnote(state: any, label: string) {
+function searchFootnote(state: StateInline, label: string) {
   const map = getFootnotes(state);
 
   for (const value of map.values()) {
