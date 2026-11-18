@@ -1,5 +1,15 @@
 # Lume Markdown Plugins
 
+> [!Warning]
+> **Deprecated.** These Lume plugins were built for Lume versions before v4. Some
+> have direct v4 counterparts.
+>
+> Notably:
+>
+> - Footnotes: [Markdown Footnotes](https://lume.land/plugins/markdown-footnotes/)
+> - TOC: [TOC](https://lume.land/plugins/toc/)
+> - Title: Consider a preprocess such [theme-simple-wiki's title preprocess](https://github.com/lumeland/theme-simple-wiki/blob/5e3ba19214921792705f746c4f8138373522497e/mod.ts#L74-L83)
+
 Collection of markdown-it plugins adapted to Lume
 
 ## Title
